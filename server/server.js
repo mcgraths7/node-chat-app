@@ -15,20 +15,35 @@ app.use(express.static(publicPath));
 
 io.on('connection', (socket) => {
 	console.log('New user connected');
+	
+	// socket.emit('newEmail', {
+	// 	from: 'me@example.com',
+	// 	text: 'What up dawg?',
+	// 	createdAt: new Date().getTime()
+	// });
+	//
+	// socket.on('createEmail', (data) => {
+	// 	console.log('data:', data);
+	// });
+	
+	socket.emit('newMessage', {
+		from: 'Server',
+		message: 'test message'
+	});
+	
+	socket.on('createMessage', (data) => {
+		console.log(`${data.from}: ${data.message}`);
+	});
+	
 	socket.on('disconnect', (reason) => {
 		console.log('Client disconnected. Reason:', reason);
 	});
 });
 
+
+
 app.get('/', (req, res) => {
 	res.sendfile(publicPath);
-});
-
-io.on('connection', (socket) => {
-	socket.emit('news', {hello: 'world'});
-	socket.on('my other event', (data) => {
-		console.log(data);
-	});
 });
 
 server.listen(port, () => {
