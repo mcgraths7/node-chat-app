@@ -18,7 +18,7 @@ npm manifest:
     "name": "node-chat-app",
     "version": "1.0.0",
     "description": "Example Chat app",
-    "main": "index.js",
+    "main": "chat.js",
     "author": "Steven McGrath",
     "license": "MIT",
     "scripts": {
