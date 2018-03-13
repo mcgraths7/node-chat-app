@@ -15,18 +15,19 @@ let app = express();
 let server = http.createServer(app);
 let io = socketIO(server);
 let userList = new Users();
-let currentUser;
 
 app.use(express.static(publicPath));
 
 io.on('connection', (socket) => {
 	console.log('New user connected');
-	currentUser = userList.getUser(socket.id);
 	
 	socket.on('join', (params, callback) => {
 		if (!isRealString(params.name) || !isRealString(params.room)) {
 			return callback('Name and Room Name required');
 		}
+		
+		
+		
 		socket.join(params.room);
 		userList.removeUser(socket.id);
 		userList.addUser(socket.id, params.name, params.room);
@@ -41,8 +42,8 @@ io.on('connection', (socket) => {
 	
 	
 	socket.on('createMessage', (message, callback) => {
-		console.log(`${currentUser.name}: ${message.text}`);
-		io.emit('newMessage', generateMessage(currentUser.name, message.text));
+		let user = userList.getUser(socket.id);
+		io.emit('newMessage', generateMessage(user.name, message.text));
 		callback();
 	});
 	
