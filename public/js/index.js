@@ -1,4 +1,8 @@
 let socket = io();
+let messageBoxSelector = $('[name=message]');
+let appendMessages = (item) => {
+	$('#messages').append(item);
+};
 
 socket.on('connect', function() {
 	console.log('Connected to server');
@@ -12,7 +16,7 @@ socket.on('newMessage', function(message) {
 	console.log(`[${message.createdAt}] ${message.from}: ${message.text}`);
 	let li = $('<li></li>');
 	li.text(`${message.from}: ${message.text}`);
-	$('#messages').append(li);
+	appendMessages(li);
 });
 
 socket.on('newLocationMessage', function(locationMessage) {
@@ -21,16 +25,16 @@ socket.on('newLocationMessage', function(locationMessage) {
 	li.text(`${locationMessage.from}: `);
 	a.attr('href', `${locationMessage.url}`);
 	li.append(a);
-	$('#messages').append(li);
+	appendMessages(li);
 });
 
 $('#message-form').on('submit', function(e) {
 	e.preventDefault();
 	socket.emit('createMessage', {
 		from: 'User',
-		text: jQuery('[name=message').val()
+		text: messageBoxSelector.val()
 	}, function() {
-	
+		messageBoxSelector.val('');
 	})
 });
 
