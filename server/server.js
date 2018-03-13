@@ -26,12 +26,19 @@ io.on('connection', (socket) => {
 			return callback('Name and Room Name required');
 		}
 		
+		if (userList.getUserList(params.room).length >= 25) {
+			return callback('Room is full (Max capacity is 25');
+		}
 		
+		let duplicate = userList.getUserList(params.room).filter((user) => user === params.name);
+		
+		if (duplicate[0]) {
+			return callback('Name is already in use. Try another name');
+		}
 		
 		socket.join(params.room);
 		userList.removeUser(socket.id);
 		userList.addUser(socket.id, params.name, params.room);
-		
 		
 		io.to(params.room).emit('updateUserList', userList.getUserList(params.room));
 		socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app!'));
@@ -43,7 +50,9 @@ io.on('connection', (socket) => {
 	
 	socket.on('createMessage', (message, callback) => {
 		let user = userList.getUser(socket.id);
-		io.emit('newMessage', generateMessage(user.name, message.text));
+		if (user && isRealString(message.text)) {
+			io.emit('newMessage', generateMessage(user.name, message.text));
+		}
 		callback();
 	});
 	
