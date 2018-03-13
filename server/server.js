@@ -28,16 +28,14 @@ io.on('connection', (socket) => {
 		socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app!'));
 		socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined.`));
 		
-		socket.on('createMessage', (message, callback) => {
-			console.log(`${params.name}: ${message.text}`);
-			io.to(params.room).emit('newMessage', generateMessage(params.name, message.text));
-			callback();
-		});
-		
 		callback();
 	});
 	
-
+	socket.on('createMessage', (message, callback) => {
+		console.log(`${message.from}: ${message.text}`);
+		io.emit('newMessage', generateMessage(message.from, message.text));
+		callback();
+	});
 	
 	socket.on('disconnect', (reason) => {
 		console.log('Client disconnected. Reason:', reason);
