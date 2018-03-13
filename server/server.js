@@ -13,9 +13,11 @@ let server = http.createServer(app);
 let io = socketIO(server);
 
 app.use(express.static(publicPath));
+let userNumber = 0;
 
 io.on('connection', (socket) => {
 	console.log('New user connected');
+	userNumber += 1;
 	
 	socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app!'));
 	
@@ -27,11 +29,8 @@ io.on('connection', (socket) => {
 		callback();
 	});
 	
-	socket.on('createLocationMessage', (coords) => {
-		io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude));
-	});
-	
 	socket.on('disconnect', (reason) => {
+		userNumber -= 1;
 		console.log('Client disconnected. Reason:', reason);
 	});
 });
