@@ -4,7 +4,7 @@ const path     = require('path'),
 			socketIO = require('socket.io');
 
 const publicPath = path.join(__dirname, '../public');
-const {generateMessage, generateLocationMessage} = require('./utils/message');
+const {generateMessage} = require('./utils/message');
 const port = process.env.PORT || 3000;
 
 let app = express();
@@ -34,8 +34,6 @@ io.on('connection', (socket) => {
 		console.log('Client disconnected. Reason:', reason);
 	});
 });
-
-
 
 app.get('/', (req, res) => {
 	res.sendfile(publicPath);
