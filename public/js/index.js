@@ -44,14 +44,17 @@ locationButton.on('click', function() {
 	if (!navigator.geolocation) {
 		return alert('This feature is not supported on your browser.');
 	}
+	locationButton.attr('disabled', 'disabled').text('Sending location...');
 	
 	navigator.geolocation.getCurrentPosition(function(position) {
+		locationButton.removeAttr('disabled').text('Send location');
 		socket.emit('createLocationMessage', {
 			latitude: position.coords.latitude,
 			longitude: position.coords.longitude
 		});
 	}, function(err) {
 		alert('Unable to fetch location');
+		locationButton.removeAttr('disabled');
 	});
 	
 });
