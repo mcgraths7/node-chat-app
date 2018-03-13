@@ -66,6 +66,7 @@ socket.on('newMessage', function(message) {
 $('#message-form').on('submit', function(e) {
 	e.preventDefault();
 	socket.emit('createMessage', {
+		from: 'User',
 		text: messageBoxSelector.val()
 	}, function() {
 		messageBoxSelector.val('');
