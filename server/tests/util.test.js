@@ -1,4 +1,5 @@
-const {generateMessage, generateLocationMessage} = require('../utils/message');
+const {generateMessage} = require('../utils/message'),
+			{isRealString}    = require('../utils/validation');
 
 describe('#generateMessage', () => {
 	test('should generate a message with from, text, and createdAt fields', () => {
@@ -9,14 +10,16 @@ describe('#generateMessage', () => {
 	});
 });
 
-describe('#generateLocationMessage', () => {
-	test('should generate a message with from, maps url, and createdAt field', () => {
-		let message = (generateLocationMessage('Admin', 38, -75));
-		expect(message).toHaveProperty('url');
-		expect(message).toHaveProperty('from');
-		expect(message).toHaveProperty('createdAt');
-		expect(message.url).toEqual('https://www.google.com/maps?q=38,-75');
-		expect(message.from).toBe('Admin');
-		expect(message.createdAt).toBeTruthy();
+describe('#isRealString', () => {
+	test('should reject non string entries', () => {
+		expect(isRealString(1)).toBeFalsy();
+	});
+	
+	test('should reject an empty string', () => {
+		expect(isRealString('    ')).toBeFalsy();
+	});
+	
+	test('should accept a string', () => {
+		expect(isRealString('hi')).toBeTruthy();
 	});
 });
