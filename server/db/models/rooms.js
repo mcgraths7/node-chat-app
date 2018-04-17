@@ -23,13 +23,17 @@ let RoomSchema = new Schema ({
 	admins: [{
 		type: Schema.Types.ObjectId, 
 		ref: 'User'
-	}]
+	}],
+	private: {
+		type: Boolean,
+		required: true
+	}
 });
 // Instance Methods
 RoomSchema.methods.toJSON = function() {
 	let room = this;
 	let roomObj = room.toObject();
-	return _.pick(roomObj, ['title', '_id', '_creator']);
+	return _.pick(roomObj, ['title', '_id', '_creator', 'private', 'users._id']);
 };
 
 // Model Methods

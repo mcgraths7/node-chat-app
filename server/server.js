@@ -17,8 +17,9 @@ const publicPath        = path.join(__dirname, '../public'),
 			{Users}           = require('./utils/users');
 
 //Load Models
-const	{User} = require('./db/models/users'),
-			{Room} = require('./db/models/rooms');  					
+const	{User} 		 = require('./db/models/users'),
+			{Room} 		 = require('./db/models/rooms'),
+			{UserRoom} = require('./db/models/usersrooms');  					
 
 
 // Load Middleware
@@ -103,6 +104,17 @@ app.get('/users', async (req, res) => {
 	}
 });
 
+app.get('/users/:id', authenticate, async (req, res) => {
+	try {
+		const id = req.params.id;
+		const user = await User.findById(id);
+		const rooms = await UserRoom.find({user: user});
+		res.send(rooms);
+	} catch (e) {
+		res.status(400).send();
+	}
+});
+
 app.post('/users', async (req, res) => {
 	try {
 		let body = _.pick(req.body, ['username', 'email', 'password']);
@@ -158,13 +170,47 @@ app.post('/rooms', authenticate, async (req, res) => {
 	try {
 		const room = new Room({
 			title: req.body.title,
-			_creator: req.user._id
+			_creator: req.user._id,
+			private: req.body.private
+		});
+		room.users.push(req.user._id);
+		const userRoom = new UserRoom({
+			user: req.user._id,
+			room: room._id
 		});
 		await room.save();
+		await userRoom.save();
 		res.send(room);
 	} catch (e) {
 		res.status(400).send();
 	}
+});
+
+
+app.patch('/rooms/join/:id', authenticate, async (req, res) => {
+	try {
+		const roomId = req.params.id;
+		let body = _.pick(req.body, ['users', 'private']);
+		const user = await User.findById(req.user._id);
+		
+		if (!ObjectID.isValid(roomId)) {
+			res.status(404).send();
+		} else if (body.private === true) {
+			res.status(401).send();
+		}
+		body.users.push(user);
+		let room = await Room.findOneAndUpdate({_id: roomId}, {$set: body}, {new: true});
+		if (!room) {
+			return res.status(404).send();
+		}
+		res.send({room});
+	} catch (e) {
+		res.status(400).send();
+	}
+});
+
+app.patch('/rooms/invite/:id', authenticate, async (req, res) => {
+
 });
 
 app.listen(port, () => {
