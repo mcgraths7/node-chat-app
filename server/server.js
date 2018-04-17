@@ -1,12 +1,27 @@
-const path     = require('path'),
-			express  = require('express'),
-			http     = require('http'),
-			socketIO = require('socket.io');
+require('./config/config');
+require('./db/mongoose');
 
+//Load third party dependencies
+const path       = require('path'),
+			express    = require('express'),
+			http     	 = require('http'),
+			socketIO   = require('socket.io'),
+			_          = require('lodash'),
+			{ObjectID} = require('mongodb'),
+			bcrypt 	   = require('bcryptjs'),
+			bodyParser = require('body-parser');
+//Load Utilities
 const publicPath        = path.join(__dirname, '../public'),
-      {generateMessage} = require('./utils/message'),
-      {isRealString}    = require('./utils/validation'),
+	  	{generateMessage} = require('./utils/message'),
+	  	{isRealString}    = require('./utils/validation'),
 			{Users}           = require('./utils/users');
+
+//Load Models
+const	{User}     				= require('./db/models/users');
+
+
+// Load Middleware
+const {authenticate} = require('./middleware/authenticate');
  
 const port = process.env.PORT || 3000;
 
@@ -16,8 +31,10 @@ let server = http.createServer(app);
 let io = socketIO(server);
 let userList = new Users();
 
-app.use(express.static(publicPath));
+// app.use(express.static(publicPath));
+app.use(bodyParser.json());
 
+//Socket logic
 io.on('connection', (socket) => {
 	console.log('New user connected');
 	
@@ -67,10 +84,72 @@ io.on('connection', (socket) => {
 	});
 });
 
-app.get('/', (req, res) => {
-	res.sendFile(publicPath);
+// app.get('/', (req, res) => {
+// 	res.sendFile(publicPath);
+// });
+
+// server.listen(port, () => {
+// 	console.log(`Now listening on port ${port}`);
+// });
+
+//Login and Create new users logic
+app.get('/users', async (req, res) => {
+	try {
+		const users = await User.find();
+		res.send({users});
+	} catch (e) {
+		res.status(400).send();
+	}
 });
 
-server.listen(port, () => {
+app.post('/users', async (req, res) => {
+	console.log('start here');
+	console.log(Date.now());
+
+	try {
+		let body = _.pick(req.body, ['email', 'password']);
+		const user = new User({
+			email: body.email,
+			password: body.password
+		});
+		await user.save();
+		console.log(Date.now());
+
+		const token = await user.generateAuthToken();
+		console.log(Date.now());
+
+		res.header('x-auth', token).send(user);
+	} catch (e) {
+		res.status(400).send(e);
+	}
+});
+
+app.get('/users/me', authenticate, (req, res) => {
+	res.send(req.user);
+});
+
+app.post('/users/login', async (req, res) => {
+	try {
+		const body = _.pick(req.body, ['email', 'password', 'loggedIn']);
+		const user = await User.findByCredentials(body.email, body.password);
+		const token = await user.generateAuthToken();
+		res.header('x-auth', token).send(user);
+	} catch (e) {
+		res.status(400).send();
+	}
+});
+
+app.delete('/users/me/token', authenticate, async (req, res) => {
+	try {
+		await req.user.removeToken(req.token);
+		res.status(200).send();
+	} catch (e) {
+		res.status(400).send();
+	}
+});
+
+
+
+app.listen(port, () => {
 	console.log(`Now listening on port ${port}`);
 });

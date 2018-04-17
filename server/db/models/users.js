@@ -1,13 +1,11 @@
-import { SSL_OP_LEGACY_SERVER_CONNECT } from 'constants';
-
 const mongoose  = require('mongoose'),
-		validator = require('validator'),
-		jwt       = require('jsonwebtoken'),
-		bcrypt    = require('bcryptjs'),
-		_         = require('lodash');
+		validator   = require('validator'),
+		jwt         = require('jsonwebtoken'),
+		bcrypt      = require('bcryptjs'),
+		_           = require('lodash');
 
 const Schema = mongoose.Schema;
-const SALT_FACTOR = 16;
+const SALT_FACTOR = 8;
 
 let UserSchema = new Schema({
 	email: {
@@ -21,10 +19,14 @@ let UserSchema = new Schema({
 			message: `{VALUE} is not a valid email!`
 		}
 	},
+	loggedIn: {
+		type: Boolean,
+		default: false,
+	},
 	password: {
-		required: true,
+		type: String,
 		minlength: 8,
-		type: String
+		required: true
 	},
 	tokens: [{
 		access: {
@@ -39,61 +41,58 @@ let UserSchema = new Schema({
 });
 
 // Instance Methods
-UserSchema.methods = {
-	toJSON() {
+UserSchema.methods.toJSON = function() {
 	let user = this;
 	let userObj = user.toObject();
-	return _.pick(userObj, ['_id', 'email']);
-	},
-	generateAuthToken() {
-		let user = this;
-		let access = 'auth';
-		let token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
-		user.tokens.push({acess, token})
-	},
-	removeToken() {
-		let user = this;
-		return user.update({
-			$pull: {
-				tokens: {
-					token
-				}
+	return _.pick(userObj, ['_id', 'email', 'loggedIn']);
+}
+UserSchema.methods.generateAuthToken = function() {
+	let user = this;
+	let access = 'auth';
+	let token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
+	user.tokens.push({access, token})
+}
+UserSchema.methods.removeToken = function() {
+	let user = this;
+	return user.update({
+		$pull: {
+			tokens: {
+				token
 			}
-		});
-	}
-};
+		}
+	});
+}
+
 
 // Model Methods
 
-UserSchema.statics = {
-	findByToken(token) {
-		let User = this;
-		
-		try {
-			let decoded = jwt.verify(token, process.env.JWT_SECRET);
-		} catch {
+UserSchema.statics.findByToken = function(token) {
+	let User = this;
+	
+	try {
+		let decoded = jwt.verify(token, process.env.JWT_SECRET);
+	} catch (e) {
+		return Promise.reject();
+	}
+}
+UserSchema.statics.findByCredentials = function(email, password) {
+	let User = this;
+
+	return User.findOne({email}).then((user) => {
+		if (!user) {
 			return Promise.reject();
 		}
-	},
-	findByCredentials(email, password) {
-		let User = this;
-
-		return User.findOne({email}).then((user) => {
-			if (!user) {
-				return Promise.reject();
-			}
-			return new Promise((resolve, reject) => {
-				bcrypt.compare(password, user.password, (err, response) => {
-					if (response) {
-						resolve(user);
-					} else {
-						reject();
-					}
-				})
+		return new Promise((resolve, reject) => {
+			bcrypt.compare(password, user.password, (err, response) => {
+				if (response) {
+					resolve(user);
+				} else {
+					reject();
+				}
 			})
-		});
-	},
-};
+		})
+	});
+}
 
 // Methods to call before each model is saved
 

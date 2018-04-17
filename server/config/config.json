@@ -1,12 +1,12 @@
 {
 	"test": {
 		"PORT": 3000,
-		"MONGODB_URI": "mongodb://localhost:27017/TodoAppTest",
+		"MONGODB_URI": "mongodb://localhost:27017/ChatAppTest",
 		"JWT_SECRET": "FaA6j1d#4ZJJl0J#FmJd^6pTgR9D2i11X$Ssr485^cqd0ENVeaNXFZeJa2hTosofSOGhbzNxMF*t0MBidVoPnzj$J*7u9Qo5btpo"
 	},
 	"development": {
 		"PORT": 3000,
-		"MONGODB_URI": "mongodb://localhost:27017/TodoApp",
+		"MONGODB_URI": "mongodb://localhost:27017/ChatApp",
 		"JWT_SECRET": "NDjHCunRZUQCDgznJS6p@puJ6sBqk3uM#vc8cPQ^NOo@NwiUUt*R1lzya#78^lMV0mB2G9QG0M7c8nFDiVtAyjHBnagD6s0keQlv"
 	}
 }
