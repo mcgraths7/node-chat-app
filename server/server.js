@@ -17,7 +17,8 @@ const publicPath        = path.join(__dirname, '../public'),
 			{Users}           = require('./utils/users');
 
 //Load Models
-const	{User}     				= require('./db/models/users');
+const	{User} = require('./db/models/users'),
+			{Room} = require('./db/models/rooms');  					
 
 
 // Load Middleware
@@ -92,7 +93,7 @@ io.on('connection', (socket) => {
 // 	console.log(`Now listening on port ${port}`);
 // });
 
-//Login and Create new users logic
+// CRUD Users logic
 app.get('/users', async (req, res) => {
 	try {
 		const users = await User.find();
@@ -142,7 +143,30 @@ app.delete('/users/me/token', authenticate, async (req, res) => {
 	}
 });
 
+// CRUD Rooms logic
+app.get('/rooms', async (req, res) => {
+	try {
+		const rooms = await Room.find();
+		res.send(rooms);
+	} catch (e) {
+		res.status(400).send();
+	}
+});
 
+app.post('/rooms', async (req, res) => {
+	try {
+		const body = _.pick(req.body, ['title', 'owner']);
+		const owner = await User.findByEmail(body.owner.email);
+		const room = new Room({
+			title: body.title,
+			owner: owner
+		});
+		await room.save();
+		res.send(room);
+	} catch (e) {
+		res.status(400).send();
+	}
+});
 
 app.listen(port, () => {
 	console.log(`Now listening on port ${port}`);
