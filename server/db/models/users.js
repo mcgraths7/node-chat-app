@@ -63,9 +63,7 @@ UserSchema.methods.removeToken = function() {
 	});
 }
 
-
 // Model Methods
-
 UserSchema.statics.findByToken = function(token) {
 	let User = this;
 	
@@ -95,7 +93,6 @@ UserSchema.statics.findByCredentials = function(email, password) {
 }
 
 // Methods to call before each model is saved
-
 UserSchema.pre('save', function(next) {
 	let user = this;
 	if (!user.isModified('password')) {
@@ -113,4 +110,4 @@ UserSchema.pre('save', function(next) {
 
 let User = mongoose.model('User', UserSchema);
 
-module.exports = {User};
+module.exports = {User, UserSchema};
