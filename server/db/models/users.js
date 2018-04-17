@@ -23,10 +23,19 @@ let UserSchema = new Schema({
 		type: Boolean,
 		default: false,
 	},
+	username: {
+		type: 'String',
+		required: true,
+		unique: true,
+		validator: {
+			validator: validator.isAlphanumeric,
+			message: `{VALUE} must only contain letters and numbers`
+		}
+	},
 	password: {
 		type: String,
 		minlength: 8,
-		required: true
+		required: true,
 	},
 	tokens: [{
 		access: {
@@ -44,14 +53,14 @@ let UserSchema = new Schema({
 UserSchema.methods.toJSON = function() {
 	let user = this;
 	let userObj = user.toObject();
-	return _.pick(userObj, ['_id', 'email', 'loggedIn']);
-}
+	return _.pick(userObj, ['username', '_id', 'email', 'loggedIn']);
+};
 UserSchema.methods.generateAuthToken = function() {
 	let user = this;
 	let access = 'auth';
 	let token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
 	user.tokens.push({access, token})
-}
+};
 UserSchema.methods.removeToken = function() {
 	let user = this;
 	return user.update({
@@ -61,7 +70,7 @@ UserSchema.methods.removeToken = function() {
 			}
 		}
 	});
-}
+};
 
 // Model Methods
 UserSchema.statics.findByToken = function(token) {
@@ -72,7 +81,7 @@ UserSchema.statics.findByToken = function(token) {
 	} catch (e) {
 		return Promise.reject();
 	}
-}
+};
 UserSchema.statics.findByCredentials = function(email, password) {
 	let User = this;
 
@@ -89,6 +98,15 @@ UserSchema.statics.findByCredentials = function(email, password) {
 				}
 			})
 		})
+	});
+};
+
+UserSchema.statics.findByEmail = function(email) {
+	return User.findOne({email}).then((user) => {
+		if (!user) {
+			return Promise.reject();
+		}
+		Promise.resolve(user);
 	});
 }
 

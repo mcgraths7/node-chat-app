@@ -5,8 +5,6 @@ const {UserSchema} = require('./users');
 
 const Schema = mongoose.Schema;
 
-
-
 let RoomSchema = {
 	title: {
 		type: 'String',

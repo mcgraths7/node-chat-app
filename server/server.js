@@ -103,21 +103,15 @@ app.get('/users', async (req, res) => {
 });
 
 app.post('/users', async (req, res) => {
-	console.log('start here');
-	console.log(Date.now());
-
 	try {
-		let body = _.pick(req.body, ['email', 'password']);
+		let body = _.pick(req.body, ['username', 'email', 'password']);
 		const user = new User({
+			username: body.username,
 			email: body.email,
 			password: body.password
 		});
 		await user.save();
-		console.log(Date.now());
-
 		const token = await user.generateAuthToken();
-		console.log(Date.now());
-
 		res.header('x-auth', token).send(user);
 	} catch (e) {
 		res.status(400).send(e);
