@@ -4,6 +4,8 @@ const mongoose  = require('mongoose'),
 		bcrypt      = require('bcryptjs'),
 		_           = require('lodash');
 
+const {RoomSchema, Room} = require('./rooms');
+
 const Schema = mongoose.Schema;
 const SALT_FACTOR = 8;
 
@@ -46,6 +48,11 @@ let UserSchema = new Schema({
 			type: String,
 			required: true
 		}
+	}],
+	activeRooms: [{
+		type: Schema.Types.ObjectId,
+		required: true,
+		ref: 'Room'
 	}]
 });
 
@@ -60,6 +67,9 @@ UserSchema.methods.generateAuthToken = function() {
 	let access = 'auth';
 	let token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
 	user.tokens.push({access, token})
+	return user.save().then(() => {
+		return token;
+	});
 };
 UserSchema.methods.removeToken = function() {
 	let user = this;
@@ -75,12 +85,18 @@ UserSchema.methods.removeToken = function() {
 // Model Methods
 UserSchema.statics.findByToken = function(token) {
 	let User = this;
+	let decoded;
 	
 	try {
-		let decoded = jwt.verify(token, process.env.JWT_SECRET);
+		decoded = jwt.verify(token, process.env.JWT_SECRET);
 	} catch (e) {
 		return Promise.reject();
 	}
+	return User.findOne({
+		'_id': decoded._id,
+		'tokens.token': token,
+		'tokens.access': 'auth'
+	});
 };
 UserSchema.statics.findByCredentials = function(email, password) {
 	let User = this;

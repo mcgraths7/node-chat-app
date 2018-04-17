@@ -1,34 +1,35 @@
 const mongoose  = require('mongoose'),
 			_         = require('lodash');
 			
-const {UserSchema} = require('./users');
+const {UserSchema, User} = require('./users');
 
 const Schema = mongoose.Schema;
 
-let RoomSchema = {
+let RoomSchema = new Schema ({
 	title: {
 		type: 'String',
 		required: true,
 		unique: true,
 	},
-	owner: {
-		user: UserSchema,
-		required: true
+	_creator: {
+		type: Schema.Types.ObjectId,
+		required: true,
+		ref: 'User'
 	},
 	users: [{
-		user: UserSchema,
-		unique: true
+		type: Schema.Types.ObjectId, 
+		ref: 'User'
 	}],
 	admins: [{
-		user: UserSchema,
-		unique: true
+		type: Schema.Types.ObjectId, 
+		ref: 'User'
 	}]
-}
+});
 // Instance Methods
 RoomSchema.methods.toJSON = function() {
 	let room = this;
 	let roomObj = room.toObject();
-	return _.pick(roomObj, ['title', '_id', 'owner']);
+	return _.pick(roomObj, ['title', '_id', '_creator']);
 };
 
 // Model Methods

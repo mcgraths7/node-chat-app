@@ -128,6 +128,7 @@ app.post('/users/login', async (req, res) => {
 		const body = _.pick(req.body, ['email', 'password', 'loggedIn']);
 		const user = await User.findByCredentials(body.email, body.password);
 		const token = await user.generateAuthToken();
+		user.loggedIn = true;
 		res.header('x-auth', token).send(user);
 	} catch (e) {
 		res.status(400).send();
@@ -153,13 +154,11 @@ app.get('/rooms', async (req, res) => {
 	}
 });
 
-app.post('/rooms', async (req, res) => {
+app.post('/rooms', authenticate, async (req, res) => {
 	try {
-		const body = _.pick(req.body, ['title', 'owner']);
-		const owner = await User.findByEmail(body.owner.email);
 		const room = new Room({
-			title: body.title,
-			owner: owner
+			title: req.body.title,
+			_creator: req.user._id
 		});
 		await room.save();
 		res.send(room);
