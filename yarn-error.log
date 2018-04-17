@@ -1,17 +1,17 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/bin/yarn add -g nodemon
+  C:\Program Files\nodejs\node.exe C:\Users\Sven\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add bcryptjs
 
 PATH: 
-  /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/VMware Fusion.app/Contents/Public:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Applications/Wireshark.app/Contents/MacOS:/Users/smm-ibm/.rvm/gems/ruby-2.4.0/bin:/Users/smm-ibm/.rvm/gems/ruby-2.4.0@global/bin:/Users/smm-ibm/.rvm/rubies/ruby-2.4.0/bin:/Users/smm-ibm/.rbenv/shims:/Users/smm-ibm/.rvm/bin
+  C:\Users\Sven\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\local\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\Sven\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\Program Files (x86)\GtkSharp\2.12\bin;C:\Program Files\MySQL\MySQL Utilities 1.6;C:\Program Files\nodejs;C:\Users\Sven\AppData\Local\Microsoft\WindowsApps;C:\Users\Sven\AppData\Roaming\Dashlane\4.8.9.37516\bin\Firefox_Extension\{442718d9-475e-452a-b3e1-fb1ee16b8e9f}\components;C:\Users\Sven\AppData\Roaming\Dashlane\4.8.9.37516\ucrt;C:\Users\Sven\AppData\Local\GitHubDesktop\bin;C:\Users\Sven\AppData\Roaming\npm;C:\Program Files\Heroku\bin;C:\Program Files\Git\usr\bin\vendor_perl;C:\Program Files\Git\usr\bin\core_perl
 
 Yarn version: 
   1.5.1
 
 Node version: 
-  9.8.0
+  9.11.1
 
 Platform: 
-  darwin x64
+  win32 x64
 
 npm manifest: 
   {
@@ -25,7 +25,7 @@ npm manifest:
       "start": "node server/server.js"
     },
     "engines": {
-      "node": "9.8.0",
+      "node": "^8.11.1",
       "yarn": "1.5.1"
     },
     "dependencies": {
@@ -3726,14 +3726,14 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/yeast/-/yeast-0.1.2.tgz#008e06d8094320c372dbc2f8ed76a0ca6c8ac419"
 
 Trace: 
-  Error: Missing list of packages to add to your project.
-      at new MessageError (/usr/local/lib/node_modules/yarn/lib/cli.js:186:110)
-      at Object.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:40587:13)
+  Error: Found incompatible module
+      at new MessageError (C:\Users\Sven\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:186:110)
+      at Object.checkOne (C:\Users\Sven\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:62444:11)
+      at C:\Users\Sven\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:22773:75
       at Generator.next (<anonymous>)
-      at step (/usr/local/lib/node_modules/yarn/lib/cli.js:98:30)
-      at /usr/local/lib/node_modules/yarn/lib/cli.js:116:14
+      at step (C:\Users\Sven\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:98:30)
+      at C:\Users\Sven\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:116:14
       at new Promise (<anonymous>)
-      at new F (/usr/local/lib/node_modules/yarn/lib/cli.js:23451:28)
-      at Object.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:95:12)
-      at Object.run (/usr/local/lib/node_modules/yarn/lib/cli.js:40599:19)
-      at run (/usr/local/lib/node_modules/yarn/lib/cli.js:89113:20)
+      at new F (C:\Users\Sven\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:23451:28)
+      at C:\Users\Sven\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:95:12
+      at C:\Users\Sven\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:22777:27

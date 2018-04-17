@@ -68,7 +68,7 @@ io.on('connection', (socket) => {
 });
 
 app.get('/', (req, res) => {
-	res.sendfile(publicPath);
+	res.sendFile(publicPath);
 });
 
 server.listen(port, () => {
